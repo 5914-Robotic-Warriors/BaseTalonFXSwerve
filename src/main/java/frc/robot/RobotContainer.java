@@ -1,9 +1,19 @@
 package frc.robot;
 
+import javax.print.attribute.standard.JobHoldUntil;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
@@ -11,14 +21,18 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
     /* Controllers */
     private final PS4Controller stick = new PS4Controller(0);
+    private final PS4Controller stick1 = new PS4Controller(1);
 
     /* Drive Controls */
     private final int translationAxis = PS4Controller.Axis.kLeftY.value;
@@ -26,38 +40,99 @@ public class RobotContainer {
     private final int rotationAxis = PS4Controller.Axis.kRightX.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(stick, PS4Controller.Button.kTriangle.value);
-    private final JoystickButton robotCentric = new JoystickButton(stick, PS4Controller.Button.kL1.value);
+    private final JoystickButton zeroGyro = new JoystickButton(stick, PS4Controller.Button.kShare.value);
+    private final JoystickButton robotCentric = new JoystickButton(stick, PS4Controller.Button.kOptions.value);
+    private final JoystickButton circle = new JoystickButton(stick, PS4Controller.Button.kCircle.value);
+    private final JoystickButton cross = new JoystickButton(stick, PS4Controller.Button.kCross.value);
+    private final JoystickButton square = new JoystickButton(stick, PS4Controller.Button.kSquare.value);
+    private final JoystickButton triangle = new JoystickButton(stick, PS4Controller.Button.kTriangle.value);
+    private final JoystickButton L1 = new JoystickButton(stick, PS4Controller.Button.kL1.value);
+    private final JoystickButton R1 = new JoystickButton(stick, PS4Controller.Button.kR1.value);
+    
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
+    private final Ballscrew ballscrew = new Ballscrew();
+    private final Intake intake = new Intake();
+    private final Flywheel flywheel = new Flywheel();
+    private final Conveyor conveyor = new Conveyor();
+    private final Limelight limelight = new Limelight();
+    private final Winch winch = new Winch();
 
+    // Timer
+    edu.wpi.first.wpilibj.Timer timer = new edu.wpi.first.wpilibj.Timer();
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    /* Autonoumous */
+    private final SendableChooser<Command> autoChooser;
+
+    private final Command OneNoteExit = new SequentialCommandGroup(new BallscrewPID(ballscrew, 365),
+            new FlywheelAuto(flywheel, conveyor, timer), new BallscrewPID(ballscrew, 0),
+            new ParallelCommandGroup(new DriveFwd(s_Swerve), new IntakeAuto(intake, conveyor))/*,
+            new DriveBackward(s_Swerve), new FlywheelAuto(flywheel, conveyor, timer)*/);
+    private final Command Exit = new DriveFwd(s_Swerve);
+    private final Command NoAuto = null;
+
+    /* Sendable chooser for Auto */
+    SendableChooser<Command> m_Chooser = new SendableChooser<>();
+    /* Add commands for auto */
+
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
     public RobotContainer() {
         s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
-                s_Swerve, 
-                () -> -stick.getRawAxis(translationAxis), 
-                () -> -stick.getRawAxis(strafeAxis), 
-                () -> -stick.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean()
-            )
-        );
+                new TeleopSwerve(
+                        s_Swerve,
+                        () -> -stick.getRawAxis(translationAxis),
+                        () -> -stick.getRawAxis(strafeAxis),
+                        () -> -stick.getRawAxis(rotationAxis),
+                        () -> robotCentric.getAsBoolean()));
+
+        //ballscrew.setDefaultCommand(new BallscrewJoystickCMD(ballscrew, () -> (stick.getL2Axis() - stick.getR2Axis())));
+        //winch.setDefaultCommand(new ClimbingWinchCMD(winch, () -> climb.getAsBoolean()));
+        ballscrew.setDefaultCommand(new BallscrewAutoSet(ballscrew, conveyor));
+        intake.setDefaultCommand(new IntakeJoystickCMD(intake, conveyor, () -> cross.getAsBoolean()));
+        conveyor.setDefaultCommand(new ConveyorJoystickCMD(conveyor, () -> cross.getAsBoolean()));
+        flywheel.setDefaultCommand(new FlywheelJoystickCMD(flywheel, () -> square.getAsBoolean()));
+        //winch.setDefaultCommand(new ClimbingWinchCMD(winch, () -> touchpad.getAsBoolean()));
+        
+        //Adding options
+        m_Chooser.addOption("One Note Exit", OneNoteExit);
+        m_Chooser.addOption("Exit", Exit);
+        m_Chooser.addOption("No Auto", NoAuto);
+        //m_Chooser.addOption("path planner test", new PathPlannerAuto("Example Path"));
+
+        // Autonomous chooser
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+  
+
+        //SmartDashboard.putData(m_Chooser);
 
         // Configure the button bindings
         configureButtonBindings();
     }
 
     /**
-     * Use this method to define your button->command mappings. Buttons can be created by
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+     * it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+
+        circle.whileTrue(new ParallelCommandGroup(new ConveyorShootCMD(conveyor)));
+        triangle.whileTrue(new FlywheelAmp(flywheel));
+        //climb.whileTrue(new InstantCommand(new winch.runWinch(1)));
+        //L1.whileTrue(new ClimbingWinchCMD(winch, -.10));
+        R1.whileTrue(new ClimbingWinchCMD(winch, .25));
+
+
+        //triangle.onTrue(new BallscrewPID(ballscrew, 365));
     }
 
     /**
@@ -66,7 +141,10 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+        return new PathPlannerAuto("New Auto");
+        //return autoChooser.getSelected();
+
         // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve);
+        //return m_Chooser.getSelected();
     }
 }

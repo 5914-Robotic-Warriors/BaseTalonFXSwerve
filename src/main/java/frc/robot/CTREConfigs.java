@@ -2,13 +2,42 @@ package frc.robot;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public final class CTREConfigs {
     public TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
     public TalonFXConfiguration swerveDriveFXConfig = new TalonFXConfiguration();
+    public TalonFXConfiguration intakeFXConfig = new TalonFXConfiguration();
+    public TalonFXConfiguration ballscrewFXConfig = new TalonFXConfiguration();
+    public TalonFXConfiguration flywheelFXConfig = new TalonFXConfiguration();
+    public TalonFXConfiguration flywheel2FXConfig = new TalonFXConfiguration();
     public CANcoderConfiguration swerveCANcoderConfig = new CANcoderConfiguration();
+    public TalonFXConfiguration conveyorFXConfig = new TalonFXConfiguration();
+    public TalonFXConfiguration winchFXConfiguration = new TalonFXConfiguration();
 
     public CTREConfigs(){
+        // Intake config
+        intakeFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        conveyorFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        //Winch config
+        winchFXConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        // Ballscrew config
+        ballscrewFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        ballscrewFXConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
+        ballscrewFXConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = 0;
+        ballscrewFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        //Flywheel1 config
+        flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        flywheelFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        //Flywheel2 config
+        flywheel2FXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        flywheel2FXConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
         /** Swerve CANCoder Configuration */
         swerveCANcoderConfig.MagnetSensor.SensorDirection = Constants.Swerve.cancoderInvert;
 

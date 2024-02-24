@@ -1,0 +1,74 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3473171105886368,
+      "y": 5.589805823486292
+    },
+    "rotation": -90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "FlywheelAuto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConveyorShoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TEST"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FlywheelAuto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConveyorShoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "New Folder",
+  "choreoAuto": false
+}
