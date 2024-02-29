@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3473171105886368,
-      "y": 5.589805823486292
+      "x": 15.169807661552642,
+      "y": 5.5430292057165325
     },
-    "rotation": -90.0
+    "rotation": -179.57242749316651
   },
   "command": {
     "type": "sequential",
@@ -18,31 +18,19 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "ConveyorShoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "TEST"
+                  "pathName": "First Red"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeAuto"
                 }
               }
             ]
@@ -51,7 +39,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Note 2"
+            "pathName": "Note 2 Red"
           }
         },
         {
@@ -61,9 +49,28 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 3 Red"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeAuto"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "ConveyorShoot"
+            "name": "FlywheelAuto"
           }
         }
       ]

@@ -4,21 +4,20 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.subsystems.Ballscrew;
-import frc.robot.subsystems.Conveyor;
 
-public class BallscrewAutoSet extends Command {
+
+public class ClimbingAutoSet extends Command {
   private final Ballscrew ballscrew;
   private final PIDController pidController;
-  private final Conveyor conveyor;
 
-  /** Creates a new BallscrewPID. */
-  public BallscrewAutoSet(Ballscrew ballscrew, Conveyor conveyor) {
+  public ClimbingAutoSet(Ballscrew ballscrew, double setpoint) {
     this.ballscrew = ballscrew;
-    this.conveyor = conveyor;
-    this.pidController = new PIDController(0.05, 0, 0);
+    this.pidController = new PIDController(setpoint, setpoint, setpoint);
+    pidController.setSetpoint(setpoint);
     pidController.setTolerance(5);
     addRequirements(ballscrew);
   }
@@ -32,15 +31,16 @@ public class BallscrewAutoSet extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(conveyor.getNote()){
+    /*if(kOptions.toggleOnTrue){
       pidController.setSetpoint(-6.25);
       //ballscrew.setAngle(-1);
     }
     else{
-      pidController.setSetpoint(85.25);
-    }
+      pidController.setSetpoint(215);
+    }*/
     double speed = pidController.calculate(ballscrew.getBallscrewEncoder());
     ballscrew.setAngle(speed);
+
   }
 
   // Called once the command ends or is interrupted.

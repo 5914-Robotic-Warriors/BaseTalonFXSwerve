@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
-//import edu.wpi.first.cameraserver;
 
 public class IntakeJoystickCMD extends Command {
   private final Intake intake;
@@ -20,7 +19,6 @@ public class IntakeJoystickCMD extends Command {
 
   @Override
   public void initialize() {
-
     // System.out.println("\nIntakeJoystickCMD started\n");
   }
 

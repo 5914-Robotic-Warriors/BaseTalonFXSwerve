@@ -9,6 +9,8 @@ import frc.robot.Robot;
 public class Ballscrew extends SubsystemBase {
     private final TalonFX ballScrew = new TalonFX(1);
 
+    private boolean ballscrewToggle = true;
+
     public Ballscrew(){
         ballScrew.getConfigurator().apply(Robot.ctreConfigs.ballscrewFXConfig);
     }
@@ -19,6 +21,14 @@ public class Ballscrew extends SubsystemBase {
 
     public double getBallscrewEncoder(){
         return ballScrew.getPosition().getValueAsDouble();
+    }
+
+    public boolean getBallscrewToggle(){
+        return ballscrewToggle;
+    }
+
+    public void toggleBool(){
+        ballscrewToggle = !ballscrewToggle;
     }
 
     @Override
