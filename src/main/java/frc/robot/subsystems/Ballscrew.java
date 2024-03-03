@@ -9,10 +9,11 @@ import frc.robot.Robot;
 public class Ballscrew extends SubsystemBase {
     private final TalonFX ballScrew = new TalonFX(1);
 
-    private boolean ballscrewToggle = true;
+    public boolean ballscrewToggle = true;
 
     public Ballscrew(){
         ballScrew.getConfigurator().apply(Robot.ctreConfigs.ballscrewFXConfig);
+        ballScrew.setPosition(80);
     }
     
     public void setAngle(double angle){

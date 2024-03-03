@@ -1,14 +1,14 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class BallscrewToggle extends Command {
 
-    private boolean ballscrewToggle = true;
+    public boolean ballscrewToggle = true;
+    private boolean runOnce = true;
 
     public BallscrewToggle() {
+        
     }
 
     public boolean getBallscrewToggle(){
@@ -21,17 +21,19 @@ public class BallscrewToggle extends Command {
 
     @Override
     public void initialize() {
-
+        
     }
 
     @Override
     public void execute() {
-        //ballscrewToggle = !ballscrewToggle;
+        if (runOnce){
+            ballscrewToggle = !ballscrewToggle;
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
-
+        runOnce = false;
     }
 
     @Override

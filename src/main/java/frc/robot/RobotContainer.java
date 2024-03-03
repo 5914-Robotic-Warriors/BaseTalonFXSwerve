@@ -1,25 +1,16 @@
 package frc.robot;
 
-import java.util.Set;
-
-import javax.swing.ButtonGroup;
-
-import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import edu.wpi.first.wpilibj.advantagescope.advantagescope;
 
@@ -57,6 +48,7 @@ public class RobotContainer {
     private final JoystickButton R1 = new JoystickButton(stick, PS4Controller.Button.kR1.value);
     private final JoystickButton options = new JoystickButton(stick, PS4Controller.Button.kOptions.value);
 
+
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Ballscrew ballscrew = new Ballscrew();
@@ -69,7 +61,7 @@ public class RobotContainer {
     // Timer
     edu.wpi.first.wpilibj.Timer timer = new edu.wpi.first.wpilibj.Timer();
 
-    boolean ballscrewtoggle = true;
+    //public boolean ballscrewtoggle = true;
     
 
     /* Autonoumous */
@@ -102,12 +94,28 @@ public class RobotContainer {
                         () -> -stick.getRawAxis(rotationAxis),
                         () -> robotCentric.getAsBoolean()));
 
-        ballscrew.setDefaultCommand(new BallscrewJoystickCMD(ballscrew, () -> (stick.getL2Axis() - stick.getR2Axis())));
+
+
+        //FIXME
+        //ballscrew.setDefaultCommand(new BallscrewJoystickCMD(ballscrew, () -> (stick.getL2Axis() - stick.getR2Axis())));
+        
+        
+    
         // winch.setDefaultCommand(new ClimbingWinchCMD(winch, () -> climb.getAsBoolean()));
-        //ballscrew.setDefaultCommand(new BallscrewAutoSet(ballscrew, conveyor));
+
+
+
+
+        //FIXME
+        ballscrew.setDefaultCommand(new BallscrewAutoSet(ballscrew, conveyor));
+
+
+        L1.whileTrue(new AmpAutoSet(ballscrew));
+
         intake.setDefaultCommand(new IntakeJoystickCMD(intake, conveyor, () -> cross.getAsBoolean()));
         conveyor.setDefaultCommand(new ConveyorJoystickCMD(conveyor, () -> cross.getAsBoolean()));
         flywheel.setDefaultCommand(new FlywheelJoystickCMD(flywheel, () -> square.getAsBoolean()));
+        //flywheel.setDefaultCommand(new ));
         // winch.setDefaultCommand(new ClimbingWinchCMD(winch, () -> touchpad.getAsBoolean()));
         
         //options.toggleOnTrue(ballscrew.);
@@ -130,6 +138,9 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
         SmartDashboard.putData(m_Chooser);
 
+        // Adding options
+        //autoChooser.addOption("null", null);
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -149,22 +160,26 @@ public class RobotContainer {
         triangle.whileTrue(new FlywheelAmp(flywheel));
         // climb.whileTrue(new InstantCommand(new winch.runWinch(1)));
         // L1.whileTrue(new ClimbingWinchCMD(winch, -.10));
-        R1.whileTrue(new ClimbingWinchCMD(winch, .25));
+        R1.whileTrue(new ClimbingWinchCMD(winch, .75));
         //options.toggleOnTrue(new BallscrewToggle(null));
         //options.onTrue(ballscrewtoggle = !ballscrewtoggle);
         //options.toggleOnTrue(ballscrewtoggle = !ballscrewtoggle)
 
 
-        //This is a test of the testing branch
+        //options.whileTrue(new BallscrewJoystickCMD(ballscrew, () -> (stick.getL2Axis() - stick.getR2Axis())));
+
+        options.toggleOnTrue(new BallscrewJoystickCMD(ballscrew, () -> (stick.getL2Axis() - stick.getR2Axis())));
 
 
-        /*options.toggleOnTrue(new BallscrewToggle());
+        //FIXME
+        //options.toggleOnTrue(new BallscrewToggle());
         
-        if(ballscrewtoggle = true){
+        /*if(BallscrewToggle().ballscrewToggle = true){
             ballscrew.setDefaultCommand(new BallscrewJoystickCMD(ballscrew, () -> (stick.getL2Axis() - stick.getR2Axis())));
         }else if(ballscrewtoggle = false){
             ballscrew.setDefaultCommand(new BallscrewAutoSet(ballscrew, conveyor));
         }*/
+        //FIXME
 
 
 
@@ -182,8 +197,8 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("3 Long Note Red");
-        //return autoChooser.getSelected();
+        //return new PathPlannerAuto("4 Note Red");
+        return autoChooser.getSelected();
 
         // return new FlywheelAuto(flywheel, conveyor, timer);
 

@@ -34,8 +34,8 @@ public class FlywheelAmp extends Command {
      * }
      */
 
-    flywheel.runFlywheel(.25);
-    flywheel.runFlywheel2(.05);
+    flywheel.runFlywheel(.175);
+    flywheel.runFlywheel2(.125);
   }
 
   @Override

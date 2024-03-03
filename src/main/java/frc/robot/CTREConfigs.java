@@ -29,6 +29,8 @@ public final class CTREConfigs {
         ballscrewFXConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
         ballscrewFXConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = 0;
         ballscrewFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        ballscrewFXConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        ballscrewFXConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 206;
 
         //Flywheel1 config
         flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
